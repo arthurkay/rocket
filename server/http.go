@@ -3,7 +3,9 @@ package server
 import (
 	"crypto/tls"
 	"fmt"
+
 	vhost "github.com/inconshreveable/go-vhost"
+
 	//"net"
 	"rocket/conn"
 	"rocket/log"
@@ -22,7 +24,7 @@ Authorization required
 	NotFound = `HTTP/1.0 404 Not Found
 Content-Length: %d
 
-Tunnel %s not found
+Route %s not found
 `
 
 	BadRequest = `HTTP/1.0 400 Bad Request

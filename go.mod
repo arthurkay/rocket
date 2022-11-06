@@ -1,14 +1,12 @@
 module rocket
 
-go 1.12
+go 1.16
 
 require (
 	github.com/alecthomas/log4go v0.0.0-20180109082532-d146e6b86faa
-	github.com/go-bindata/go-bindata v3.1.2+incompatible // indirect
 	github.com/gorilla/websocket v1.4.1
 	github.com/inconshreveable/go-vhost v0.0.0-20160627193104-06d84117953b
 	github.com/inconshreveable/mousetrap v1.0.0
-	github.com/jteeuwen/go-bindata v3.0.7+incompatible // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/kr/binarydist v0.1.0 // indirect
 	github.com/kr/pretty v0.1.0 // indirect

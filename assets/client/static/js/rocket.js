@@ -313,6 +313,7 @@ rocket.controller({
             };
 
             ws.onmessage = function(message) {
+                console.log("New Message: "+message)
                 $scope.$apply(function() {
                     txnSvc.add(message.data);
                 });

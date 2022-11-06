@@ -4,7 +4,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"io/ioutil"
-	"rocket/server/assets"
+	"rocket/assets"
 )
 
 var cyphers = []uint16{
@@ -30,7 +30,7 @@ func LoadTLSConfig(crtPath, keyPath string) (tlsConfig *tls.Config, err error) {
 	fileOrAsset := func(path, default_path string) ([]byte, error) {
 		loadFn := ioutil.ReadFile
 		if path == "" {
-			loadFn = assets.Asset
+			loadFn = assets.Assets.ReadFile
 			path = default_path
 		}
 
@@ -43,11 +43,11 @@ func LoadTLSConfig(crtPath, keyPath string) (tlsConfig *tls.Config, err error) {
 		cert tls.Certificate
 	)
 
-	if crt, err = fileOrAsset(crtPath, "assets/server/tls/snakeoil.crt"); err != nil {
+	if crt, err = fileOrAsset(crtPath, "server/tls/snakeoil.crt"); err != nil {
 		return
 	}
 
-	if key, err = fileOrAsset(keyPath, "assets/server/tls/snakeoil.key"); err != nil {
+	if key, err = fileOrAsset(keyPath, "server/tls/snakeoil.key"); err != nil {
 		return
 	}
 

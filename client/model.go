@@ -189,7 +189,7 @@ func (c *ClientModel) PlayRequest(tunnel mvc.Tunnel, payload []byte) {
 	var localConn conn.Conn
 	localConn, err := conn.Dial(tunnel.LocalAddr, "prv", nil)
 	if err != nil {
-		c.Warn("Failed to open private leg to %s: %v", tunnel.LocalAddr, err)
+		c.Warn("Failed to open private log to %s: %v", tunnel.LocalAddr, err)
 		return
 	}
 

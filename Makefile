@@ -35,27 +35,10 @@ compile-all:
 	GOOS=linux GOARCH=amd64 go build -o rocketd_linux_amd64 ./cmd/rocketd
 	GOOS=windows GOARCH=amd64 go build -o rocketd_windows_amd64 ./cmd/rocketd
 
-
-assets: client-assets server-assets
-
-go-bindata:
-	go get github.com/jteeuwen/go-bindata/go-bindata
-
-client-assets: go-bindata
-	go-bindata -nomemcopy -pkg=assets -tags=$(BUILDTAGS) \
-		-o=client/assets/all.go \
-		assets/client/...
-
-server-assets: go-bindata
-	go-bindata -nomemcopy -pkg=assets -tags=$(BUILDTAGS) \
-		-o=server/assets/all.go \
-		assets/server/...
-
-build: assets client server
+build: client server
 
 clean:
 	go clean -i -r ./...
-	rm -rf client/assets/ server/assets/
 
 contributors:
 	echo "Contributors to rocket, both large and small:\n" > CONTRIBUTORS

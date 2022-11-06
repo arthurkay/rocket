@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"rocket/client/assets"
+	"rocket/assets"
 	"rocket/client/mvc"
 	"rocket/log"
 	"rocket/proto"
@@ -241,7 +241,7 @@ func (whv *WebHttpView) register() {
 			}
 		}()
 
-		pageTmpl, err := assets.Asset("assets/client/page.html")
+		pageTmpl, err := assets.Assets.ReadFile("client/page.html")
 		if err != nil {
 			panic(err)
 		}

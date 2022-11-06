@@ -6,14 +6,14 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
-	"rocket/client/assets"
+	"rocket/assets"
 )
 
 func LoadTLSRootCAs(rootCertPaths []string) (*x509.CertPool, error) {
 	pool := x509.NewCertPool()
 
 	for _, certPath := range rootCertPaths {
-		rootCrt, err := assets.Asset(certPath)
+		rootCrt, err := assets.Assets.ReadFile(certPath)
 		if err != nil {
 			return nil, err
 		}

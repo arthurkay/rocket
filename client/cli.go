@@ -22,7 +22,7 @@ Examples:
 Advanced usage: rocket [OPTIONS] <command> [command args] [...]
 Commands:
 	rocket start [tunnel] [...]    Start tunnels by name from config file
-	ngork start-all               Start all tunnels defined in config file
+	rocket start-all               Start all tunnels defined in config file
 	rocket list                    List tunnel names from config file
 	rocket help                    Print help
 	rocket version                 Print rocket version

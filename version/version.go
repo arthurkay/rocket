@@ -5,9 +5,9 @@ import (
 )
 
 const (
-	Proto = "1"
+	Proto = "0"
 	Major = "1"
-	Minor = "0"
+	Minor = "1"
 )
 
 func MajorMinor() string {

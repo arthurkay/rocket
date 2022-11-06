@@ -4,7 +4,7 @@ package web
 import (
 	"net/http"
 	"path"
-	"rocket/client/assets"
+	"rocket/assets"
 	"rocket/client/mvc"
 	"rocket/log"
 	"rocket/proto"
@@ -36,7 +36,16 @@ func NewWebView(ctl mvc.Controller, addr string) *WebView {
 
 	// handle web socket connections
 	http.HandleFunc("/_ws", func(w http.ResponseWriter, r *http.Request) {
-		conn, err := websocket.Upgrade(w, r, nil, 1024, 1024)
+		upgrader := websocket.Upgrader{
+			CheckOrigin: func(r *http.Request) bool {
+				// Accept all hosts
+				return true
+			},
+			ReadBufferSize:  1024,
+			WriteBufferSize: 1024,
+		}
+
+		conn, err := upgrader.Upgrade(w, r, nil)
 
 		if err != nil {
 			http.Error(w, "Failed websocket upgrade", 400)
@@ -57,7 +66,7 @@ func NewWebView(ctl mvc.Controller, addr string) *WebView {
 
 	// serve static assets
 	http.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
-		buf, err := assets.Asset(path.Join("assets", "client", r.URL.Path[1:]))
+		buf, err := assets.Assets.ReadFile(path.Join("client", r.URL.Path[1:]))
 		if err != nil {
 			wv.Warn("Error serving static file: %s", err.Error())
 			http.NotFound(w, r)

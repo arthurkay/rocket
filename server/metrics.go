@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	gometrics "github.com/rcrowley/go-metrics"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"rocket/conn"
 	"rocket/log"
 	"time"
+
+	gometrics "github.com/rcrowley/go-metrics"
 )
 
 var metrics Metrics
