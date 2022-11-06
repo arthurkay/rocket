@@ -1,0 +1,13 @@
+*.swp
+bin/
+vendor/
+client/assets/
+server/assets/
+.idea
+/rocket*
+/rocketd*
+/rocket.exe
+/rocketd.exe
+/build
+/dist
+.github/workflows/docker.yml
