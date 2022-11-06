@@ -89,7 +89,7 @@ brews:
       email: arthurkalikiti@gmail.com
     folder: Formula
     homepage: "https://github.com/arthurkay/rocket"
-    description: "Introspected tunnels to localhost a fork from rocket."
+    description: "An edge network computing tool for serving localhost on the internet"
     install: |
       bin.install "rocket"
     test: |
@@ -105,7 +105,7 @@ brews:
       email: arthurkalikiti@gmail.com
     folder: Formula
     homepage: "https://github.com/arthurkay/rocket"
-    description: "Server introspected tunnels to localhost a fork from rocket."
+    description: "An edge network computing tool for serving localhost on the internet"
     install: |
       bin.install "rocketd"
     test: |
@@ -118,12 +118,12 @@ scoop:
     name: Arthur Kalikiti
     email: arthurkalikiti@gmail.com
   homepage: "https://github.com/arthurkay/rocket"
-  description: "Introspected tunnels to localhost a fork from rocket."
+  description: "An edge network computing tool for serving localhost on the internet"
   license: MIT
 nfpms:
   - id: rocket
     homepage: "https://github.com/arthurkay/rocket"
-    description: "Introspected tunnels to localhost a fork from rocket."
+    description: "An edge network computing tool for serving localhost on the internet"
     maintainer: Arthur Kalikiti <arthurkalikiti@gmail.com>
     license: MIT
     formats:
