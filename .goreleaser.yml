@@ -59,7 +59,7 @@ archives:
       darwin: MacOS
       linux: Linux
       windows: Windows
-      386: i386
+      "386": i386
       amd64: x86_64
     format_overrides:
       - goos: windows
@@ -72,65 +72,8 @@ archives:
       darwin: MacOS
       linux: Linux
       windows: Windows
-      386: i386
+      "386": i386
       amd64: x86_64
     format_overrides:
       - goos: windows
         format: zip
-brews:
-  - name: rocket
-    ids:
-      - rocket
-    tap:
-      owner: arthur
-      name: homebrew-tap
-    commit_author:
-      name: Arthur Kalikiti
-      email: arthurkalikiti@gmail.com
-    folder: Formula
-    homepage: "https://github.com/arthurkay/rocket"
-    description: "An edge network computing tool for serving localhost on the internet"
-    install: |
-      bin.install "rocket"
-    test: |
-      system "#{bin}/rocket", "-v"
-  - name: rocketd
-    ids:
-      - rocketd
-    tap:
-      owner: arthur
-      name: homebrew-tap
-    commit_author:
-      name: Arthur Kalikiti
-      email: arthurkalikiti@gmail.com
-    folder: Formula
-    homepage: "https://github.com/arthurkay/rocket"
-    description: "An edge network computing tool for serving localhost on the internet"
-    install: |
-      bin.install "rocketd"
-    test: |
-      system "#{bin}/rocketd", "-v"
-scoop:
-  bucket:
-    owner: arthur
-    name: scoop-bucket
-  commit_author:
-    name: Arthur Kalikiti
-    email: arthurkalikiti@gmail.com
-  homepage: "https://github.com/arthurkay/rocket"
-  description: "An edge network computing tool for serving localhost on the internet"
-  license: MIT
-nfpms:
-  - id: rocket
-    homepage: "https://github.com/arthurkay/rocket"
-    description: "An edge network computing tool for serving localhost on the internet"
-    maintainer: Arthur Kalikiti <arthurkalikiti@gmail.com>
-    license: MIT
-    formats:
-      - deb
-      - rpm
-    recommends:
-      - rpm
-    builds:
-      - rocket
-      - rocketd
