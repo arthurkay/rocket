@@ -1,6 +1,6 @@
 # rocket - Edge Network Computing
 
-### ”I want to expose a local server behind a NAT or firewall to the internet.”
+### Put LOCALHOST on the INTERNET
 
 # Install client
 
