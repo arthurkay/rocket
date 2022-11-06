@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	defaultServerAddr   = "livingopensource.africa:4443"
+	defaultServerAddr   = "cloud.livingopensource.africa:4443"
 	defaultInspectAddr  = "127.0.0.1:4040"
 	pingInterval        = 20 * time.Second
 	maxPongLatency      = 15 * time.Second

@@ -10,16 +10,7 @@ import (
 	"time"
 
 	"github.com/inconshreveable/mousetrap"
-
-	_ "net/http/pprof"
 )
-
-//debug memory profiler $ go tool pprof http://localhost:6060/debug/pprof/heap
-/* func pprof() {
-	go func() {
-		http.ListenAndServe("localhost:6060", nil)
-	}()
-} */
 
 func init() {
 	if runtime.GOOS == "windows" {
@@ -33,9 +24,6 @@ func init() {
 }
 
 func Main() {
-	//run profiler
-	//pprof()
-
 	// parse options
 	opts, err := ParseArgs()
 	if err != nil {

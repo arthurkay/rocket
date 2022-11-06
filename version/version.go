@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	Proto = "0"
+	Proto = "1"
 	Major = "1"
 	Minor = "0"
 )

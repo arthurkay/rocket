@@ -58,7 +58,7 @@ func ParseArgs() (opts *Options, err error) {
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, usage1, os.Args[0])
 		flag.PrintDefaults()
-		fmt.Fprintf(os.Stderr, usage2)
+		fmt.Fprint(os.Stderr, usage2)
 	}
 
 	config := flag.String(
