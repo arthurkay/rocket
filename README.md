@@ -1,6 +1,6 @@
-# rocket - Edge Network Computing
+# rocket - Edge Network Tunnelling
 
-### ”I want to expose a local server behind a NAT or firewall to the internet.”
+### ”Expose a local server behind a NAT or firewall to the internet.”
 
 # Install client
 

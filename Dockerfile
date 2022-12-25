@@ -12,8 +12,7 @@ RUN mkdir -p ${GOPATH}/src/ && \
 
 ENV PATH ${GOPATH}/bin:/usr/local/go/bin:$PATH
 
-RUN go get -u golang.org/x/lint/golint && \
-    go get -u github.com/jteeuwen/go-bindata/go-bindata
+RUN go get -u golang.org/x/lint/golint
 
 COPY go.mod go.sum Makefile ./
 RUN make deps

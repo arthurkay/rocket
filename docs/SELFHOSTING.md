@@ -5,14 +5,14 @@ Running your own rocket server is really easy! The instructions below will guide
 ## 1. Get an SSL certificate
 
 rocket provides secure tunnels via TLS, so you'll need an SSL certificate. Assuming you want to create
-tunnels on _.livingopensource.africa, buy a wildcard SSL certificate for _.livingopensource.africa. Note that if you
+tunnels on *.livingopensource.africa, buy a wildcard SSL certificate for *.livingopensource.africa. Note that if you
 don't need to run https tunnels that you don't need a wildcard certificate. (In fact, you can
 just use a self-signed cert at that point, see the section on that later in the document).
 
 ## 2. Modify your DNS
 
 You need to use the DNS management tools given to you by your provider to create an A
-record which points \*.livingopensource.africa to the IP address of the server where you will run rocketd.
+record which points *.livingopensource.africa to the IP address of the server where you will run rocketd.
 
 ## 3. Compile it
 
@@ -84,7 +84,7 @@ version: "3.7"
 
 services:
   rocketd:
-    image: arthur/rocket
+    image: nerdygeek/rocketd
     entrypoint: rocketd
     command: -domain livingopensource.africa -httpAddr=:80 -httpsAddr=:443 -tunnelAddr=:4443 -tlsCrt=/certs/tls.crt -tlsKey=/certs/tls.key
     volumes:

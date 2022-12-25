@@ -10,6 +10,7 @@ type Options struct {
 	tunnelAddr        string
 	tunnelTLSClientCA string
 	domain            string
+	tcpSubdomain      string
 	tlsCrt            string
 	tlsKey            string
 	tlsClientCA       string
@@ -23,6 +24,7 @@ func parseArgs() *Options {
 	tunnelAddr := flag.String("tunnelAddr", ":4443", "Public address listening for rocket client")
 	tunnelTLSClientCA := flag.String("tunnelTLSClientCA", "", "Path to a TLS Client CA file if you want enable mutual auth for tunnel")
 	domain := flag.String("domain", "livingopensource.africa", "Domain where the tunnels are hosted")
+	tcpSubdomain := flag.String("tcpSubdomain", "", "The subdomain to use for tcp connections")
 	tlsCrt := flag.String("tlsCrt", "", "Path to a TLS certificate file")
 	tlsKey := flag.String("tlsKey", "", "Path to a TLS key file")
 	tlsClientCA := flag.String("tlsClientCA", "", "Path to a TLS Client CA file if you want enable mutual auth for subdomains")
@@ -36,6 +38,7 @@ func parseArgs() *Options {
 		tunnelAddr:        *tunnelAddr,
 		tunnelTLSClientCA: *tunnelTLSClientCA,
 		domain:            *domain,
+		tcpSubdomain:      *tcpSubdomain,
 		tlsCrt:            *tlsCrt,
 		tlsKey:            *tlsKey,
 		tlsClientCA:       *tlsClientCA,
