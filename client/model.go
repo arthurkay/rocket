@@ -352,6 +352,7 @@ func (c *ClientModel) control() {
 			c.tunnels[tunnel.PublicUrl] = tunnel
 			c.connStatus = mvc.ConnOnline
 			c.Info("Tunnel established at %v", tunnel.PublicUrl)
+			c.Info("Forwarding Traffic %s => %s", tunnel.PublicUrl, tunnel.LocalAddr)
 			c.update()
 
 		default:
