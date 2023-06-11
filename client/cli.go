@@ -89,7 +89,7 @@ func ParseArgs() (opts *Options, err error) {
 	subdomain := flag.String(
 		"subdomain",
 		"",
-		"Request a custom subdomain from the rocket server. (HTTP only)")
+		"Request a custom subdomain from the rocket server.")
 
 	hostname := flag.String(
 		"hostname",
