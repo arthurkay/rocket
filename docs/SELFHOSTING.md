@@ -75,6 +75,26 @@ command=/root/rocket/rocketd -domain livingopensource.africa -log-level=WARNING 
 
 ```
 
+### Systemd Setup
+
+```conf
+
+[Unit]
+Description=Rocket Daemon
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/usr/local/share/rocket
+ExecStart=/usr/local/share/rocket/rocketd -tcpSubdomain zm -domain livingopensource.africa -httpAddr=:80 -httpsAddr=:443 -tunnelAddr=:4443 -tlsCrt=/etc/letsencrypt/live/livingopensource.africa/fullchain.pem -tlsKey=/etc/letsencrypt/live/livingopensource.africa/privkey.pem
+Restart=on-failure
+RestartSec=15s
+
+[Install]
+WantedBy=multi-user.target
+
+```
+
 ### (Option 3) Docker Compose
 
 or also you can use docker-compose

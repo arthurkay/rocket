@@ -109,6 +109,9 @@ func NewTunnel(m *msg.ReqTunnel, ctl *Control) (t *Tunnel, err error) {
 			// create the url
 			addr := t.listener.Addr().(*net.TCPAddr)
 			t.url = fmt.Sprintf("tcp://%s:%d", opts.domain, addr.Port)
+			if t.req.Subdomain != "" {
+				t.url = fmt.Sprintf("tcp://%s.%s:%d", t.req.Subdomain, opts.domain, addr.Port)
+			}
 			if opts.tcpSubdomain != "" {
 				t.url = fmt.Sprintf("tcp://%s.%s:%d", opts.tcpSubdomain, opts.domain, addr.Port)
 			}
