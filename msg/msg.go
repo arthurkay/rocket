@@ -63,14 +63,14 @@ type AuthResp struct {
 // ReqId is a random number set by the client that it can pull
 // from future NewTunnel's to correlate then to the requesting ReqTunnel.
 type ReqTunnel struct {
-	Category string
-	ReqId    string
-	Protocol string
+	Category  string
+	ReqId     string
+	Protocol  string
+	Subdomain string
 
 	// http only
-	Hostname  string
-	Subdomain string
-	HttpAuth  string
+	Hostname string
+	HttpAuth string
 
 	// tcp only
 	RemotePort uint16
