@@ -36,13 +36,6 @@ func Main() {
 	log.LogTo(opts.logto, opts.loglevel)
 	log.Info("Starting rocket")
 
-	// read configuration file
-	/* config, err := LoadConfiguration(opts)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	} */
-
 	// seed random number generator
 	seed, err := util.RandomSeed()
 	if err != nil {
