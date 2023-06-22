@@ -73,7 +73,7 @@ func ParseArgs() (opts *Options, err error) {
 
 	logto := flag.String(
 		"log",
-		"stdout",
+		"none",
 		"Write log messages to this file. 'stdout' and 'none' have special meanings")
 
 	loglevel := flag.String(
