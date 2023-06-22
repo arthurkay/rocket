@@ -9,8 +9,8 @@
             "type": "go",
             "request": "launch",
             "mode": "debug",
-            "program": "./cmd/rocket",
-            "args": ["-proto=tcp", "22"]
+            "program": "./cmd/rocket/main.go",
+            "args": ["start-all", "-logTo", "/var/log/swiftcloud/rocket.log"]
         }
     ]
 }

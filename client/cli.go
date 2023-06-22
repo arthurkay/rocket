@@ -61,14 +61,19 @@ func ParseArgs() (opts *Options, err error) {
 		fmt.Fprint(os.Stderr, usage2)
 	}
 
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return nil, err
+	}
+
 	config := flag.String(
 		"config",
-		"",
+		fmt.Sprintf("%s/.rocket", home),
 		"Path to rocket configuration file. (default: $HOME/.rocket)")
 
 	logto := flag.String(
 		"log",
-		"none",
+		"stdout",
 		"Write log messages to this file. 'stdout' and 'none' have special meanings")
 
 	loglevel := flag.String(

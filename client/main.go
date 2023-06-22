@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+
 	"rocket/log"
 	"rocket/util"
 	"runtime"
@@ -33,13 +34,14 @@ func Main() {
 
 	// set up logging
 	log.LogTo(opts.logto, opts.loglevel)
+	log.Info("Starting rocket")
 
 	// read configuration file
-	config, err := LoadConfiguration(opts)
+	/* config, err := LoadConfiguration(opts)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
-	}
+	} */
 
 	// seed random number generator
 	seed, err := util.RandomSeed()
@@ -49,5 +51,6 @@ func Main() {
 	}
 	rand.Seed(seed)
 
-	NewController().Run(config)
+	initController := NewController()
+	watch(initController, opts, opts.config)
 }
