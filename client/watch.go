@@ -1,7 +1,6 @@
 package client
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"rocket/log"
@@ -13,7 +12,8 @@ import (
 // Watch one or more files, but instead of watching the file directly it watches
 // the parent directory. This solves various issues where files are frequently
 // renamed, such as editors saving them.
-func watch(c *Controller, opts *Options, files ...string) {
+func watch(reload chan *bool, opts *Options) {
+	var files []string = []string{opts.config}
 	if len(files) < 1 {
 		log.Error("must specify at least one file to watch")
 		os.Exit(1)
@@ -26,17 +26,8 @@ func watch(c *Controller, opts *Options, files ...string) {
 	}
 	defer w.Close()
 
-	// read configuration file
-	config, err := LoadConfiguration(opts)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
-	go c.Run(config)
-
 	// Start listening for events.
-	go fileLoop(w, c, opts, files)
+	go fileLoop(w, opts, reload, files)
 
 	// Add all files from the commandline.
 	for _, p := range files {
@@ -60,16 +51,18 @@ func watch(c *Controller, opts *Options, files ...string) {
 	<-make(chan struct{}) // Block forever
 }
 
-func fileLoop(w *fsnotify.Watcher, c *Controller, opts *Options, files []string) {
+func fileLoop(w *fsnotify.Watcher, opts *Options, reload chan *bool, files []string) {
 	i := 0
 	for {
 		select {
+		case <-reload:
+			log.Debug("Reloading")
 		// Read from Errors.
 		case err, ok := <-w.Errors:
 			if !ok { // Channel was closed (i.e. Watcher.Close() was called).
 				return
 			}
-			fmt.Printf("ERROR: %s", err)
+			log.Error("Oops: %s", err)
 		// Read from Events.
 		case e, ok := <-w.Events:
 			if !ok { // Channel was closed (i.e. Watcher.Close() was called).
@@ -92,27 +85,23 @@ func fileLoop(w *fsnotify.Watcher, c *Controller, opts *Options, files []string)
 			// Just print the event nicely aligned, and keep track how many
 			// events we've seen.
 			i++
-			log.Error("%3d %s", i, e)
-			// read configuration file
+			log.Debug("%3d %s", i, e)
 			time.Sleep(1 * time.Second)
-			// Update the confifurations and prepare traffic migration to new controller
-			newController := NewController()
-			log.Info("Migrating traffic to another controller instance")
-			for _, view := range c.views {
-				newController.AddView(view)
-			}
-			newController.model = c.model
-			//c.Shutdown("Killing old connection")
-			c.model = nil
-			c = newController
-			config, err := LoadConfiguration(opts)
-			if err != nil {
-				fmt.Println(err)
-				os.Exit(1)
-			}
-			newController.Shutdown("Good Bye")
 
-			c.Run(config)
+			if e.Has(fsnotify.Write) {
+				log.Debug("File changed, starting communication with the server")
+				status := true
+				select {
+				case <-reload:
+					log.Debug("Read from the reload channel")
+				case reload <- &status:
+					log.Debug("Sent to the reload channel")
+				default:
+					log.Debug("No reload channel")
+					status = true
+				}
+
+			}
 		}
 	}
 }

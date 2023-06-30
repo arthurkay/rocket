@@ -7,7 +7,7 @@ import (
 
 var root log.Logger = make(log.Logger)
 
-func LogTo(target string, level_name string) {
+func LogTo(target string, levelName string) {
 	var writer log.LogWriter = nil
 
 	switch target {
@@ -22,7 +22,7 @@ func LogTo(target string, level_name string) {
 	if writer != nil {
 		var level = log.DEBUG
 
-		switch level_name {
+		switch levelName {
 		case "FINEST":
 			level = log.FINEST
 		case "FINE":
