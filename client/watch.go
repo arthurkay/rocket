@@ -55,8 +55,9 @@ func fileLoop(w *fsnotify.Watcher, opts *Options, reload chan *bool, files []str
 	i := 0
 	for {
 		select {
+		// Handle the reload action here
 		case <-reload:
-			log.Debug("Reloading")
+			log.Debug("Reloading....")
 		// Read from Errors.
 		case err, ok := <-w.Errors:
 			if !ok { // Channel was closed (i.e. Watcher.Close() was called).

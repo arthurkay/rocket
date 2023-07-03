@@ -50,7 +50,7 @@ func Main() {
 		os.Exit(1)
 	}
 	rand.Seed(seed)
-	reload := make(chan *bool)
+	reload := make(chan *bool, 1)
 	go watch(reload, opts)
 	status := false
 	reload <- &status
