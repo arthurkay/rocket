@@ -12,7 +12,7 @@ import (
 // Watch one or more files, but instead of watching the file directly it watches
 // the parent directory. This solves various issues where files are frequently
 // renamed, such as editors saving them.
-func watch(reload chan *bool, opts *Options) {
+func watch(reload chan *bool, opts *Options, initController *Controller) {
 	var files []string = []string{opts.config}
 	if len(files) < 1 {
 		log.Error("must specify at least one file to watch")
@@ -27,7 +27,7 @@ func watch(reload chan *bool, opts *Options) {
 	defer w.Close()
 
 	// Start listening for events.
-	go fileLoop(w, opts, reload, files)
+	go fileLoop(w, opts, reload, initController, files)
 
 	// Add all files from the commandline.
 	for _, p := range files {
@@ -51,7 +51,7 @@ func watch(reload chan *bool, opts *Options) {
 	<-make(chan struct{}) // Block forever
 }
 
-func fileLoop(w *fsnotify.Watcher, opts *Options, reload chan *bool, files []string) {
+func fileLoop(w *fsnotify.Watcher, opts *Options, reload chan *bool, initController *Controller, files []string) {
 	i := 0
 	for {
 		select {
@@ -97,6 +97,7 @@ func fileLoop(w *fsnotify.Watcher, opts *Options, reload chan *bool, files []str
 					log.Debug("Read from the reload channel")
 				case reload <- &status:
 					log.Debug("Sent to the reload channel")
+					go newInstance(opts, reload, initController)
 				default:
 					log.Debug("No reload channel")
 					status = true
@@ -104,5 +105,29 @@ func fileLoop(w *fsnotify.Watcher, opts *Options, reload chan *bool, files []str
 
 			}
 		}
+	}
+}
+
+func newInstance(opts *Options, reload chan *bool, c *Controller) {
+	ready := <-reload
+	if *ready {
+		log.Debug("Loading new config file...")
+		config, err := LoadConfiguration(opts)
+		if err != nil {
+			log.Error("%v", err)
+			os.Exit(1)
+		}
+		config.InspectAddr = "disabled"
+		for _, tunnel := range c.GetModel().tunnels {
+			log.Debug("Tunnel %s", tunnel.PublicUrl)
+		}
+		//clientID := c.GetModel().id
+		c.model = c.GetModel()
+		c.doShutdown()
+
+		c = NewController()
+
+		log.Info("Reloaded config.")
+		c.Run(config)
 	}
 }

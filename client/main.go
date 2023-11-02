@@ -36,10 +36,10 @@ func Main() {
 	log.LogTo(opts.logto, opts.loglevel)
 	log.Info("Starting rocket")
 
-	// read configuration file
+	log.Debug("Loading config file...")
 	config, err := LoadConfiguration(opts)
 	if err != nil {
-		fmt.Println(err)
+		log.Error("%v", err)
 		os.Exit(1)
 	}
 
@@ -50,13 +50,11 @@ func Main() {
 		os.Exit(1)
 	}
 	rand.Seed(seed)
+	initController := NewController()
 	reload := make(chan *bool, 1)
-	go watch(reload, opts)
+	go watch(reload, opts, initController)
 	status := false
 	reload <- &status
 
-	// start the controller
-	log.Info("Starting controller")
-	controller := NewController()
-	controller.Run(config)
+	initController.Run(config)
 }
