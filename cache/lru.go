@@ -51,6 +51,7 @@ type entry struct {
 	time_accessed time.Time
 }
 
+// NewLRUCache creates a new LRUCache with the given capacity.
 func NewLRUCache(capacity uint64) *LRUCache {
 	return &LRUCache{
 		list:     list.New(),
@@ -59,6 +60,7 @@ func NewLRUCache(capacity uint64) *LRUCache {
 	}
 }
 
+// Get returns the value for the given key, and or false if the key is not in the cache.
 func (lru *LRUCache) Get(key string) (v Value, ok bool) {
 	lru.mu.Lock()
 	defer lru.mu.Unlock()
@@ -71,6 +73,8 @@ func (lru *LRUCache) Get(key string) (v Value, ok bool) {
 	return element.Value.(*entry).value, true
 }
 
+// Set adds the given key/value pair to the cache. If the key already exists,
+// it is moved to the front of the list and the value updated.
 func (lru *LRUCache) Set(key string, value Value) {
 	lru.mu.Lock()
 	defer lru.mu.Unlock()
@@ -82,6 +86,8 @@ func (lru *LRUCache) Set(key string, value Value) {
 	}
 }
 
+// SetIfAbsent adds the given key/value pair to the cache if it does not already exist.
+// Othwequewise, move the element to the front of the list.
 func (lru *LRUCache) SetIfAbsent(key string, value Value) {
 	lru.mu.Lock()
 	defer lru.mu.Unlock()
@@ -93,6 +99,8 @@ func (lru *LRUCache) SetIfAbsent(key string, value Value) {
 	}
 }
 
+// Delete removes the entry associated with the given key. Returns true if sucessful.
+// Otherwise, returns false.
 func (lru *LRUCache) Delete(key string) bool {
 	lru.mu.Lock()
 	defer lru.mu.Unlock()
@@ -108,6 +116,7 @@ func (lru *LRUCache) Delete(key string) bool {
 	return true
 }
 
+// Clear removes all entries from the cache.
 func (lru *LRUCache) Clear() {
 	lru.mu.Lock()
 	defer lru.mu.Unlock()
@@ -117,6 +126,8 @@ func (lru *LRUCache) Clear() {
 	lru.size = 0
 }
 
+// SetCapacity sets the capacity of the cache. If the cache is at capacity,
+// then the least recently used element will be evicted.
 func (lru *LRUCache) SetCapacity(capacity uint64) {
 	lru.mu.Lock()
 	defer lru.mu.Unlock()
@@ -125,6 +136,7 @@ func (lru *LRUCache) SetCapacity(capacity uint64) {
 	lru.checkCapacity()
 }
 
+// Stats returns the length, size, capacity, and oldest access time of the cache.
 func (lru *LRUCache) Stats() (length, size, capacity uint64, oldest time.Time) {
 	lru.mu.Lock()
 	defer lru.mu.Unlock()
@@ -134,6 +146,7 @@ func (lru *LRUCache) Stats() (length, size, capacity uint64, oldest time.Time) {
 	return uint64(lru.list.Len()), lru.size, lru.capacity, oldest
 }
 
+// StatsJSON returns a JSON representation of the cache's stats.
 func (lru *LRUCache) StatsJSON() string {
 	if lru == nil {
 		return "{}"
@@ -142,6 +155,7 @@ func (lru *LRUCache) StatsJSON() string {
 	return fmt.Sprintf("{\"Length\": %v, \"Size\": %v, \"Capacity\": %v, \"OldestAccess\": \"%v\"}", l, s, c, o)
 }
 
+// Keys returns a slice of all the keys in the cache.
 func (lru *LRUCache) Keys() []string {
 	lru.mu.Lock()
 	defer lru.mu.Unlock()
@@ -153,6 +167,7 @@ func (lru *LRUCache) Keys() []string {
 	return keys
 }
 
+// Items returns a slice of all the items in the cache.
 func (lru *LRUCache) Items() []Item {
 	lru.mu.Lock()
 	defer lru.mu.Unlock()
@@ -165,12 +180,14 @@ func (lru *LRUCache) Items() []Item {
 	return items
 }
 
+// SaveItems saves items to a writer that is gpb encoded []Item.
 func (lru *LRUCache) SaveItems(w io.Writer) error {
 	items := lru.Items()
 	encoder := gob.NewEncoder(w)
 	return encoder.Encode(items)
 }
 
+// SaveItemsToFile saves items to a file that is gpb encoded []Item.
 func (lru *LRUCache) SaveItemsToFile(path string) error {
 	if wr, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644); err != nil {
 		return err
@@ -180,6 +197,7 @@ func (lru *LRUCache) SaveItemsToFile(path string) error {
 	}
 }
 
+// LoadItems loads items from a reader that is gob encoded []Item.
 func (lru *LRUCache) LoadItems(r io.Reader) error {
 	items := make([]Item, 0)
 	decoder := gob.NewDecoder(r)
@@ -201,6 +219,8 @@ func (lru *LRUCache) LoadItems(r io.Reader) error {
 	return nil
 }
 
+// LoadItemsFromFile loads items from a file.
+// The file is assumed to be a gob-encoded []Item that persists across restarts.
 func (lru *LRUCache) LoadItemsFromFile(path string) error {
 	if rd, err := os.Open(path); err != nil {
 		return err
@@ -210,6 +230,7 @@ func (lru *LRUCache) LoadItemsFromFile(path string) error {
 	}
 }
 
+// updateInplace updates an existing entry in the cache and moves it to the front of the list.
 func (lru *LRUCache) updateInplace(element *list.Element, value Value) {
 	valueSize := value.Size()
 	sizeDiff := valueSize - element.Value.(*entry).size
@@ -220,11 +241,14 @@ func (lru *LRUCache) updateInplace(element *list.Element, value Value) {
 	lru.checkCapacity()
 }
 
+// moveToFront moves an element to the front of the list.
 func (lru *LRUCache) moveToFront(element *list.Element) {
 	lru.list.MoveToFront(element)
 	element.Value.(*entry).time_accessed = time.Now()
 }
 
+// addNew adds a new entry to the cache.
+// A new entry is always added to the front of the list.
 func (lru *LRUCache) addNew(key string, value Value) {
 	newEntry := &entry{key, value, value.Size(), time.Now()}
 	element := lru.list.PushFront(newEntry)
@@ -233,6 +257,8 @@ func (lru *LRUCache) addNew(key string, value Value) {
 	lru.checkCapacity()
 }
 
+// checkCapacity checks to see cache size exceeds the capacity.
+// If capacity has been exceeded, the least recently used element is evicted.
 func (lru *LRUCache) checkCapacity() {
 	// Partially duplicated from Delete
 	for lru.size > lru.capacity {
