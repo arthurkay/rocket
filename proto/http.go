@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -111,7 +110,7 @@ func (h *Http) readRequests(tee *conn.Tee, lastTxn chan *HttpTxn, connCtx interf
 	}
 }
 
-//from httputil, here to use custom drainBody func
+// from httputil, here to use custom drainBody func
 func DumpRequest(req *http.Request, body bool) ([]byte, error) {
 	var err error
 	save := req.Body
@@ -119,7 +118,7 @@ func DumpRequest(req *http.Request, body bool) ([]byte, error) {
 		req.Body = nil
 	} else {
 		//save, req.Body, err = drainBody(req.Body)
-		io.Copy(ioutil.Discard, req.Body)
+		io.Copy(io.Discard, req.Body)
 		if err != nil {
 			return nil, err
 		}
@@ -186,9 +185,9 @@ func DumpRequest(req *http.Request, body bool) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-//from httputil, here to use custom drainBody func
+// from httputil, here to use custom drainBody func
 var errNoBody = errors.New("sentinel error value")
-var emptyBody = ioutil.NopCloser(strings.NewReader(""))
+var emptyBody = io.NopCloser(strings.NewReader(""))
 
 type failureToReadBody struct{}
 
@@ -213,7 +212,7 @@ func DumpResponse(resp *http.Response, body bool) ([]byte, error) {
 	} else if resp.Body == nil {
 		resp.Body = emptyBody
 	} else {
-		io.Copy(ioutil.Discard, resp.Body)
+		io.Copy(io.Discard, resp.Body)
 		//save, resp.Body, err = drainBody(resp.Body)
 		if err != nil {
 			return nil, err
@@ -270,12 +269,12 @@ func (h *Http) readResponses(tee *conn.Tee, lastTxn chan *HttpTxn) {
 			// sending bytes to each other
 			wg.Add(2)
 			go func() {
-				ioutil.ReadAll(tee.WriteBuffer())
+				io.ReadAll(tee.WriteBuffer())
 				wg.Done()
 			}()
 
 			go func() {
-				ioutil.ReadAll(tee.ReadBuffer())
+				io.ReadAll(tee.ReadBuffer())
 				wg.Done()
 			}()
 
@@ -340,12 +339,12 @@ func DumpRequestOut(req *http.Request, body bool) ([]byte, error) {
 	if !body || req.Body == nil {
 		req.Body = nil
 		if req.ContentLength != 0 {
-			req.Body = ioutil.NopCloser(io.LimitReader(neverEnding('x'), req.ContentLength))
+			req.Body = io.NopCloser(io.LimitReader(neverEnding('x'), req.ContentLength))
 			dummyBody = true
 		}
 	} else {
 		var err error
-		io.Copy(ioutil.Discard, req.Body)
+		io.Copy(io.Discard, req.Body)
 		//save, req.Body, err = drainBody(req.Body)
 		if err != nil {
 			return nil, err
@@ -375,7 +374,8 @@ func DumpRequestOut(req *http.Request, body bool) ([]byte, error) {
 	dr := &delegateReader{c: make(chan io.Reader)}
 	// Wait for the request before replying with a dummy response:
 	go func() {
-		req, _ := http.ReadRequest(bufio.NewReader(pr))
+		http.ReadRequest(bufio.NewReader(pr))
+		/* req, _ := http.ReadRequest(bufio.NewReader(pr))
 		// THIS IS THE PART THAT'S BROKEN IN THE STDLIB (as of Go 1.3)
 		if req != nil && req.Body != nil {
 			//this part consumes memory from requests, doesn't appear to be needed
@@ -383,7 +383,7 @@ func DumpRequestOut(req *http.Request, body bool) ([]byte, error) {
 			//better way
 			//io.Copy(ioutil.Discard, req.Body)
 
-		}
+		} */
 		dr.c <- strings.NewReader("HTTP/1.1 204 No Content\r\n\r\n")
 	}()
 

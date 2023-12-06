@@ -22,12 +22,12 @@ RUN make build
 
 FROM alpine:3.13
 
-LABEL maintainer="arthurkalikiti@gmail.com"
+LABEL maintainer="arthur@kalikiti.net"
 
 RUN apk add --no-cache ca-certificates && update-ca-certificates
 RUN apk add --no-cache tzdata
 
-ENV TZ America/Los_Angeles
+ENV TZ Africa/Lusaka
 
 ENV BUILDER_PATH /app
 ENV WORKDIR /app
