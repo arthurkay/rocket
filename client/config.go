@@ -2,7 +2,6 @@ package client
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net"
 	"net/url"
 	"os"
@@ -46,7 +45,7 @@ func LoadConfiguration(opts *Options) (config *Configuration, err error) {
 	}
 
 	log.Info("Reading configuration file %s", configPath)
-	configBuf, err := ioutil.ReadFile(configPath)
+	configBuf, err := os.ReadFile(configPath)
 	if err != nil {
 		// failure to read a configuration file is only a fatal error if
 		// the user specified one explicitly
@@ -308,7 +307,7 @@ func SaveAuthToken(configPath, authtoken string) (err error) {
 	c := new(Configuration)
 
 	// read the configuration
-	oldConfigBytes, err := ioutil.ReadFile(configPath)
+	oldConfigBytes, err := os.ReadFile(configPath)
 	if err == nil {
 		// unmarshal if we successfully read the configuration file
 		if err = yaml.Unmarshal(oldConfigBytes, c); err != nil {
@@ -330,6 +329,6 @@ func SaveAuthToken(configPath, authtoken string) (err error) {
 		return
 	}
 
-	err = ioutil.WriteFile(configPath, newConfigBytes, 0600)
+	err = os.WriteFile(configPath, newConfigBytes, 0600)
 	return
 }
