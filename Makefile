@@ -1,4 +1,4 @@
-REGISTRY?=arthur/rocket
+REGISTRY?=nerdygeek/rocket
 APP_VERSION?=latest
 .PHONY: default server client deps fmt clean all release-all assets client-assets server-assets contributors
 

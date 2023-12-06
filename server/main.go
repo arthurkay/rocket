@@ -3,7 +3,6 @@ package server
 import (
 	"crypto/tls"
 	"math/rand"
-	"os"
 	"rocket/conn"
 	log "rocket/log"
 	"rocket/msg"
@@ -14,7 +13,7 @@ import (
 
 const (
 	registryCacheSize uint64        = 1024 * 1024 // 1 MB
-	connReadTimeout   time.Duration = 10 * time.Second
+	connReadTimeout   time.Duration = 1 * time.Second
 )
 
 // GLOBALS
@@ -113,7 +112,7 @@ func Main() {
 	rand.Seed(seed)
 
 	// init tunnel/control registry
-	registryCacheFile := os.Getenv("REGISTRY_CACHE_FILE")
+	registryCacheFile := opts.cacheFile
 	tunnelRegistry = NewTunnelRegistry(registryCacheSize, registryCacheFile)
 	controlRegistry = NewControlRegistry()
 

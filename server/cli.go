@@ -11,6 +11,7 @@ type Options struct {
 	tunnelTLSClientCA string
 	domain            string
 	tcpSubdomain      string
+	cacheFile         string
 	tlsCrt            string
 	tlsKey            string
 	tlsClientCA       string
@@ -25,6 +26,7 @@ func parseArgs() *Options {
 	tunnelTLSClientCA := flag.String("tunnelTLSClientCA", "", "Path to a TLS Client CA file if you want enable mutual auth for tunnel")
 	domain := flag.String("domain", "livingopensource.africa", "Domain where the tunnels are hosted")
 	tcpSubdomain := flag.String("tcpSubdomain", "", "The subdomain to use for tcp connections")
+	cacheFile := flag.String("cacheFile", "", "Path to a cache file")
 	tlsCrt := flag.String("tlsCrt", "", "Path to a TLS certificate file")
 	tlsKey := flag.String("tlsKey", "", "Path to a TLS key file")
 	tlsClientCA := flag.String("tlsClientCA", "", "Path to a TLS Client CA file if you want enable mutual auth for subdomains")
@@ -39,6 +41,7 @@ func parseArgs() *Options {
 		tunnelTLSClientCA: *tunnelTLSClientCA,
 		domain:            *domain,
 		tcpSubdomain:      *tcpSubdomain,
+		cacheFile:         *cacheFile,
 		tlsCrt:            *tlsCrt,
 		tlsKey:            *tlsKey,
 		tlsClientCA:       *tlsClientCA,

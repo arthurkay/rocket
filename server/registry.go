@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	cacheSaveInterval time.Duration = 10 * time.Minute
+	cacheSaveInterval time.Duration = 1 * time.Minute
 )
 
 type cacheUrl string
