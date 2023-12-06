@@ -7,7 +7,7 @@ The rocket client is the more complicated piece because it has UIs for displayin
 
 ## Compiling
 
-    git clone git@github.com:arthur/rocket.git
+    git clone git@github.com:arthurkay/rocket.git
     cd rocket && make
     rocket [LOCAL PORT]
 
