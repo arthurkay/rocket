@@ -37,6 +37,8 @@ type Listener struct {
 	Conns chan *loggedConn
 }
 
+// wrapConn wraps a net.Conn with a loggedConn to add logging and identification.
+// It detects and handles existing loggedConns to avoid double wrapping.
 func wrapConn(conn net.Conn, typ string) *loggedConn {
 	switch c := conn.(type) {
 	case *vhost.HTTPConn:
@@ -53,6 +55,10 @@ func wrapConn(conn net.Conn, typ string) *loggedConn {
 	return nil
 }
 
+// Listen creates a TCP listener for the given address and type.
+// It returns a Listener that handles wrapping accepted connections
+// and sending them on a channel. TLS is configured if tlsCfg is not nil.
+// The listener runs in a goroutine to continuously accept connections.
 func Listen(addr, typ string, tlsCfg *tls.Config) (l *Listener, err error) {
 	// listen for incoming connections
 	listener, err := net.Listen("tcp", addr)
@@ -69,7 +75,7 @@ func Listen(addr, typ string, tlsCfg *tls.Config) (l *Listener, err error) {
 		for {
 			rawConn, err := listener.Accept()
 			if err != nil {
-				log.Error("Failed to accept new TCP connection of type %s: %v", typ, err)
+				log.Error("failed to accept new TCP connection of type %s: %v", typ, err)
 				continue
 			}
 
@@ -84,10 +90,16 @@ func Listen(addr, typ string, tlsCfg *tls.Config) (l *Listener, err error) {
 	return
 }
 
+// Wrap wraps a net.Conn with a loggedConn to add logging and
+// identification.
 func Wrap(conn net.Conn, typ string) *loggedConn {
 	return wrapConn(conn, typ)
 }
 
+// Dial establishes a new TCP connection to the given address.
+// It handles wrapping the raw TCP connection, logging, and optionally
+// enabling TLS. The connection type parameter typ provides context
+// for logging.
 func Dial(addr, typ string, tlsCfg *tls.Config) (conn *loggedConn, err error) {
 	var rawConn net.Conn
 	if rawConn, err = net.Dial("tcp", addr); err != nil {
@@ -104,6 +116,9 @@ func Dial(addr, typ string, tlsCfg *tls.Config) (conn *loggedConn, err error) {
 	return
 }
 
+// DialHttpProxy dials a connection through an HTTP proxy server.
+// It handles connecting to the proxy, sending a CONNECT request,
+// and upgrading to TLS if needed.
 func DialHttpProxy(proxyUrl, addr, typ string, tlsCfg *tls.Config) (conn *loggedConn, err error) {
 	// parse the proxy address
 	var parsedUrl *url.URL
@@ -123,7 +138,7 @@ func DialHttpProxy(proxyUrl, addr, typ string, tlsCfg *tls.Config) (conn *logged
 	case "https":
 		proxyTlsConfig = new(tls.Config)
 	default:
-		err = fmt.Errorf("Proxy URL scheme must be http or https, got: %s", parsedUrl.Scheme)
+		err = fmt.Errorf("proxy URL scheme must be http or https, got: %s", parsedUrl.Scheme)
 		return
 	}
 
@@ -162,10 +177,15 @@ func DialHttpProxy(proxyUrl, addr, typ string, tlsCfg *tls.Config) (conn *logged
 	return
 }
 
+// StartTLS upgrades the connection to TLS.
+// It uses the provided tls.Config to initialize a TLS
+// client connection wrapped around the existing connection.
 func (c *loggedConn) StartTLS(tlsCfg *tls.Config) {
 	c.Conn = tls.Client(c.Conn, tlsCfg)
 }
 
+// Close closes the underlying connection after logging a debug message.
+// It returns any error from closing the underlying connection.
 func (c *loggedConn) Close() (err error) {
 	if err := c.Conn.Close(); err == nil {
 		c.Debug("Closing")
@@ -173,10 +193,14 @@ func (c *loggedConn) Close() (err error) {
 	return
 }
 
+// Id returns a unique identifier for the connection composed of the connection
+// type and id. This is used in log messages to identify the connection.
 func (c *loggedConn) Id() string {
 	return fmt.Sprintf("%s:%x", c.typ, c.id)
 }
 
+// SetType changes the type identifier used in the connection ID. It updates
+// the log prefixes to use the new ID.
 func (c *loggedConn) SetType(typ string) {
 	oldId := c.Id()
 	c.typ = typ
@@ -193,6 +217,8 @@ func (c *loggedConn) CloseRead() error {
 	return c.tcp.CloseRead()
 }
 
+// Join copies data between two connections bidirectionally until both are closed.
+// It returns the number of bytes copied from c1 to c2 and from c2 to c1.
 func Join(c Conn, c2 Conn) (int64, int64) {
 	var wait sync.WaitGroup
 

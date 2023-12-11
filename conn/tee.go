@@ -35,6 +35,9 @@ type Tee struct {
 	Conn
 }
 
+// NewTee wraps a Conn in a Tee, which copies all reads and writes on the Conn
+// into two dedicated io.Pipe buffers that can be read separately. This allows
+// introspecting the data flowing over the Conn without modifying the actual Conn code.
 func NewTee(conn Conn) *Tee {
 	c := &Tee{
 		rd:   nil,
@@ -50,14 +53,20 @@ func NewTee(conn Conn) *Tee {
 	return c
 }
 
+// ReadBuffer returns a buffered reader that reads from the tee's read pipe.
+// This allows consuming the data that was read from the underlying connection.
 func (c *Tee) ReadBuffer() *bufio.Reader {
 	return bufio.NewReader(c.readPipe.rd)
 }
 
+// WriteBuffer returns a buffered reader that reads from the tee's write pipe.
+// This allows consuming the data that was written to the underlying connection.
 func (c *Tee) WriteBuffer() *bufio.Reader {
 	return bufio.NewReader(c.writePipe.rd)
 }
 
+// Read implements the Conn Read method by reading from the tee's reader.
+// It copies the read data into the read pipe and closes it if an error occurs.
 func (c *Tee) Read(b []byte) (n int, err error) {
 	n, err = c.rd.Read(b)
 	if err != nil {
@@ -66,6 +75,9 @@ func (c *Tee) Read(b []byte) (n int, err error) {
 	return
 }
 
+// ReadFrom implements the io.ReaderFrom interface by copying from the
+// given reader into the tee's underlying writer. This copies the data to
+// both the underlying connection and the write pipe.
 func (c *Tee) ReadFrom(r io.Reader) (n int64, err error) {
 	n, err = io.Copy(c.wr, r)
 	if err != nil {
@@ -74,6 +86,8 @@ func (c *Tee) ReadFrom(r io.Reader) (n int64, err error) {
 	return
 }
 
+// Write implements the Conn Write method by writing to the tee's writer.
+// It copies the written data into the write pipe and closes it if an error occurs.
 func (c *Tee) Write(b []byte) (n int, err error) {
 	n, err = c.wr.Write(b)
 	if err != nil {
